@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resturantsite
+  labels:
+    app: resturantsite
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: resturantsite
+  template:
+    metadata:
+      labels:
+        app: resturantsite
+    spec:
+      containers:
+      - name: resturantsite
+        image: prvinsm21/resturantsite:replaceImageTag
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
