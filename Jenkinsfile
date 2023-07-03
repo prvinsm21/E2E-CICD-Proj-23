@@ -2,6 +2,8 @@ pipeline {
     agent any
     environment {
         DOCKERHUB_USERNAME = "prvinsm21"
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        IMAGE_NAME = "prvinsm21/resturantsite:${BUILD_NUMBER}"
     }
     stages {
         stage ('Git checkout') {
@@ -35,6 +37,16 @@ pipeline {
                     withSonarQubeEnv(credentialsId: 'sonar-api') {
                         sh 'mvn sonar:sonar'
                     }
+                }
+            }
+        }
+        stage ('Build and Push Docker image') {
+            steps {
+                script {
+                    sh 'docker build -t $IMAGE_NAME .'
+                    def dockerImage = docker.image("${IMAGE_NAME}")
+                    docker.withRegistry('https://index.docker.io/v1/', "dockerhub") {
+                    dockerImage.push()
                 }
             }
         }
